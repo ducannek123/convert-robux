@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Robux Shop Convert Tool</title>
+<style>
+*{box-sizing:border-box}
+body{
+    background:#0f172a;
+    color:#e5e7eb;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:20px;
+}
+h2{
+    text-align:center;
+    color:#38bdf8;
+    margin-bottom:15px;
+}
+.container{
+    display:flex;
+    gap:15px;
+}
+.left, .right{
+    background:#020617;
+    border-radius:10px;
+    padding:15px;
+    box-shadow:0 0 10px rgba(56,189,248,0.2);
+}
+.left{flex:3}
+.right{flex:1}
+
+textarea, input{
+    width:100%;
+    background:#020617;
+    border:1px solid #38bdf8;
+    color:#e5e7eb;
+    padding:8px;
+    border-radius:6px;
+}
+button{
+    background:#38bdf8;
+    color:#020617;
+    border:none;
+    padding:8px 18px;
+    border-radius:6px;
+    margin-top:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+button:hover{
+    background:#0ea5e9;
+}
+
+#convertedList{
+    margin-top:10px;
+    border:1px solid #38bdf8;
+    border-radius:6px;
+    max-height:420px;
+    overflow-y:auto;
+}
+
+.item{
+    display:grid;
+    grid-template-columns: 24px 1.5fr 1.2fr 0.6fr;
+    gap:8px;
+    align-items:center;
+    padding:6px 8px;
+    border-bottom:1px solid rgba(56,189,248,0.2);
+}
+.item:hover{
+    background:rgba(56,189,248,0.1);
+}
+.header{
+    background:#020617;
+    font-weight:bold;
+    color:#38bdf8;
+}
+.user{color:#22d3ee}
+.service{color:#facc15}
+.robux{text-align:right;color:#4ade80;font-weight:bold}
+
+.totalBox{
+    margin-top:15px;
+    line-height:1.8;
+    background:#020617;
+    border:1px solid #38bdf8;
+    padding:10px;
+    border-radius:6px;
+}
+.totalBox span{
+    font-weight:bold;
+    color:#4ade80;
+}
+</style>
+</head>
+<body>
+
+<h2>🛒Convert list robux vippro🛒</h2>
+
+<div class="container">
+    <div class="left">
+        <h3>Nhập dữ liệu gốc</h3>
+        <textarea id="inputData" rows="6" placeholder="Dán toàn bộ log đơn hàng vào đây..."></textarea>
+        <button onclick="convertData()">Convert</button>
+
+        <div id="convertedList">
+            <div class="item header">
+                <div></div>
+                <div>Username</div>
+                <div>Dịch vụ</div>
+                <div>Robux</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right">
+        <h3>Robux hiện có</h3>
+        <input type="number" id="robuxInput" value="0">
+
+        <div class="totalBox">
+            <div>Tổng Robux đã chọn: <span id="totalRobux">0</span></div>
+            <div>Còn dư: <span id="remainRobux">0</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+let convertedData = [];
+
+function convertData(){
+    const input = document.getElementById("inputData").value.trim();
+    const lines = input.split("\n");
+    convertedData = [];
+
+    lines.forEach(line=>{
+        let parts = line.replace(/\s+/g," ").trim().split(" ");
+        let ogIndex = parts.findIndex(p => p.startsWith("OG-"));
+        if(ogIndex === -1) return;
+
+        let username = parts[ogIndex + 1] || "";
+        let service  = parts[ogIndex + 3] || "";
+
+        let robux = 0;
+        parts.forEach(p=>{
+            if(p.startsWith("$R")){
+                robux = parseInt(p.replace("$R","")) || 0;
+            }
+        });
+
+        if(username && service && robux){
+            convertedData.push({username, service, robux});
+        }
+    });
+
+    renderList();
+}
+
+function renderList(){
+    const list = document.getElementById("convertedList");
+    list.innerHTML = `
+        <div class="item header">
+            <div></div>
+            <div>Username</div>
+            <div>Dịch vụ</div>
+            <div>Robux</div>
+        </div>
+    `;
+
+    convertedData.forEach(item=>{
+        const row = document.createElement("div");
+        row.className = "item";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = true;
+        cb.dataset.robux = item.robux;
+        cb.onchange = updateTotal;
+
+        const user = document.createElement("div");
+        user.className = "user";
+        user.textContent = item.username;
+
+        const service = document.createElement("div");
+        service.className = "service";
+        service.textContent = item.service;
+
+        const robux = document.createElement("div");
+        robux.className = "robux";
+        robux.textContent = item.robux;
+
+        row.appendChild(cb);
+        row.appendChild(user);
+        row.appendChild(service);
+        row.appendChild(robux);
+
+        list.appendChild(row);
+    });
+
+    updateTotal();
+}
+
+function updateTotal(){
+    const checks = document.querySelectorAll("#convertedList input[type=checkbox]");
+    let total = 0;
+    checks.forEach(c=>{
+        if(c.checked){
+            total += parseInt(c.dataset.robux);
+        }
+    });
+
+    const have = parseInt(document.getElementById("robuxInput").value) || 0;
+    document.getElementById("totalRobux").innerText = total;
+    document.getElementById("remainRobux").innerText = have - total;
+}
+
+document.getElementById("robuxInput").addEventListener("input", updateTotal);
+</script>
+
+</body>
+</html>
