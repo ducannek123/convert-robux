@@ -13,6 +13,8 @@ body{
     background:#020617;
     color:#e5e7eb;
     overflow:auto;
+	zoom:1.1;
+
 }
 
 /* PARTICLE BACKGROUND */
@@ -121,37 +123,53 @@ button:hover{background:#0ea5e9}
 /* MOBILE RESPONSIVE */
 @media (max-width:768px){
     body{
-        padding:10px;
+        padding:14px;
+        font-size:16px;
     }
+
     h2{
+        font-size:22px;
+        margin-bottom:12px;
+    }
+
+    h3{
         font-size:18px;
     }
-    .container{
-        flex-direction:column;
-        gap:12px;
-    }
-    .left,.right{
-        width:100%;
-    }
+
     textarea{
-        height:120px;
-        font-size:14px;
+        height:160px;
+        font-size:16px;
+        padding:12px;
     }
+
+    input{
+        font-size:16px;
+        padding:10px;
+    }
+
     button{
         width:100%;
-        font-size:15px;
+        font-size:17px;
+        padding:12px;
+        border-radius:10px;
     }
+
     #convertedList{
-        max-height:260px;
+        max-height:320px;
     }
+
     .item{
-        grid-template-columns:20px 1.2fr 1fr 0.6fr;
-        font-size:12px;
+        grid-template-columns:28px 1.5fr 1.3fr 0.7fr;
+        font-size:15px;
+        padding:10px 8px;
     }
+
     .totalBox{
-        font-size:14px;
+        font-size:16px;
+        padding:14px;
     }
 }
+
 </style>
 </head>
 
