@@ -3,34 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <title>Robux Shop Convert Tool</title>
+
 <style>
 *{box-sizing:border-box}
 body{
-    background:#0f172a;
-    color:#e5e7eb;
-    font-family:Arial, sans-serif;
     margin:0;
     padding:20px;
+    font-family:Arial,sans-serif;
+    background:#020617;
+    color:#e5e7eb;
+    overflow:auto;
 }
+
+/* PARTICLE BACKGROUND */
+#particles-js{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+}
+
+/* TITLE */
 h2{
     text-align:center;
     color:#38bdf8;
+    text-shadow:0 0 12px #38bdf8;
     margin-bottom:15px;
 }
+
+/* LAYOUT */
 .container{
     display:flex;
     gap:15px;
+    position:relative;
+    z-index:1;
 }
-.left, .right{
-    background:#020617;
-    border-radius:10px;
+.left,.right{
+    background:rgba(2,6,23,0.92);
+    border-radius:12px;
     padding:15px;
-    box-shadow:0 0 10px rgba(56,189,248,0.2);
+    box-shadow:0 0 15px rgba(56,189,248,0.35);
 }
 .left{flex:3}
 .right{flex:1}
 
-textarea, input{
+/* INPUT */
+textarea,input{
     width:100%;
     background:#020617;
     border:1px solid #38bdf8;
@@ -38,20 +55,23 @@ textarea, input{
     padding:8px;
     border-radius:6px;
 }
+textarea{
+    resize:none;
+}
 button{
+    width:120px;
     background:#38bdf8;
     color:#020617;
     border:none;
-    padding:8px 18px;
+    padding:8px;
     border-radius:6px;
     margin-top:8px;
     cursor:pointer;
     font-weight:bold;
 }
-button:hover{
-    background:#0ea5e9;
-}
+button:hover{background:#0ea5e9}
 
+/* LIST */
 #convertedList{
     margin-top:10px;
     border:1px solid #38bdf8;
@@ -59,7 +79,6 @@ button:hover{
     max-height:420px;
     overflow-y:auto;
 }
-
 .item{
     display:grid;
     grid-template-columns: 24px 1.5fr 1.2fr 0.6fr;
@@ -67,19 +86,25 @@ button:hover{
     align-items:center;
     padding:6px 8px;
     border-bottom:1px solid rgba(56,189,248,0.2);
+    font-size:14px;
 }
 .item:hover{
-    background:rgba(56,189,248,0.1);
+    background:rgba(56,189,248,0.12);
 }
 .header{
-    background:#020617;
     font-weight:bold;
+    background:#020617;
     color:#38bdf8;
 }
 .user{color:#22d3ee}
 .service{color:#facc15}
-.robux{text-align:right;color:#4ade80;font-weight:bold}
+.robux{
+    text-align:right;
+    color:#4ade80;
+    font-weight:bold;
+}
 
+/* RIGHT PANEL */
 .totalBox{
     margin-top:15px;
     line-height:1.8;
@@ -92,11 +117,49 @@ button:hover{
     font-weight:bold;
     color:#4ade80;
 }
+
+/* MOBILE RESPONSIVE */
+@media (max-width:768px){
+    body{
+        padding:10px;
+    }
+    h2{
+        font-size:18px;
+    }
+    .container{
+        flex-direction:column;
+        gap:12px;
+    }
+    .left,.right{
+        width:100%;
+    }
+    textarea{
+        height:120px;
+        font-size:14px;
+    }
+    button{
+        width:100%;
+        font-size:15px;
+    }
+    #convertedList{
+        max-height:260px;
+    }
+    .item{
+        grid-template-columns:20px 1.2fr 1fr 0.6fr;
+        font-size:12px;
+    }
+    .totalBox{
+        font-size:14px;
+    }
+}
 </style>
 </head>
+
 <body>
 
-<h2>🛒Convert list robux vippro🛒</h2>
+<div id="particles-js"></div>
+
+<h2>🛒 Robux Shop Convert Tool</h2>
 
 <div class="container">
     <div class="left">
@@ -215,6 +278,24 @@ function updateTotal(){
 }
 
 document.getElementById("robuxInput").addEventListener("input", updateTotal);
+</script>
+
+<!-- PARTICLES JS -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 80 },
+    color: { value: "#38bdf8" },
+    shape: { type: "circle" },
+    opacity: { value: 0.4 },
+    size: { value: 2 },
+    move: { speed: 0.8 }
+  },
+  interactivity:{
+    events:{ onhover:{ enable:true, mode:"repulse" } }
+  }
+});
 </script>
 
 </body>
