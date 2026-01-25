@@ -209,6 +209,22 @@ button:hover{background:#0ea5e9}
 <script>
 let convertedData = [];
 
+function formatService(text){
+    text = text.toUpperCase();
+
+    if(text.includes("+1")) return "+1 SLOT";
+    if(text.includes("X2 MONEY")) return "X2 MONEY";
+    if(text.includes("X2 MASTERY")) return "X2 MASTERY";
+    if(text.includes("X2")) return "X2";
+
+    if(text.includes("ROCKET")) return "ROCKET";
+    if(text.includes("DARK")) return "DARK";
+    if(text.includes("MAGMA")) return "MAGMA";
+    if(text.includes("SPIN")) return "SPIN";
+
+    return text;
+}
+
 function convertData(){
     const input = document.getElementById("inputData").value.trim();
     const lines = input.split("\n");
@@ -220,7 +236,10 @@ function convertData(){
         if(ogIndex === -1) return;
 
         let username = parts[ogIndex + 1] || "";
-        let service  = parts[ogIndex + 3] || "";
+
+        // Lấy toàn bộ chuỗi dịch vụ thay vì 1 từ
+        let serviceRaw = parts.slice(ogIndex + 2, ogIndex + 6).join(" ");
+        let service = formatService(serviceRaw);
 
         let robux = 0;
         parts.forEach(p=>{
@@ -296,24 +315,6 @@ function updateTotal(){
 }
 
 document.getElementById("robuxInput").addEventListener("input", updateTotal);
-</script>
-
-<!-- PARTICLES JS -->
-<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-<script>
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 80 },
-    color: { value: "#38bdf8" },
-    shape: { type: "circle" },
-    opacity: { value: 0.4 },
-    size: { value: 2 },
-    move: { speed: 0.8 }
-  },
-  interactivity:{
-    events:{ onhover:{ enable:true, mode:"repulse" } }
-  }
-});
 </script>
 
 </body>
