@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Robux Shop Convert Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 *{box-sizing:border-box}
@@ -12,9 +13,6 @@ body{
     font-family:Arial,sans-serif;
     background:#020617;
     color:#e5e7eb;
-    overflow:auto;
-	zoom:1.1;
-
 }
 
 /* PARTICLE BACKGROUND */
@@ -36,6 +34,7 @@ h2{
 .container{
     display:flex;
     gap:15px;
+    flex-wrap:wrap;
     position:relative;
     z-index:1;
 }
@@ -45,8 +44,8 @@ h2{
     padding:15px;
     box-shadow:0 0 15px rgba(56,189,248,0.35);
 }
-.left{flex:3}
-.right{flex:1}
+.left{flex:3; min-width:280px;}
+.right{flex:1; min-width:240px;}
 
 /* INPUT */
 textarea,input{
@@ -57,15 +56,13 @@ textarea,input{
     padding:8px;
     border-radius:6px;
 }
-textarea{
-    resize:none;
-}
+textarea{resize:none;}
 button{
-    width:120px;
+    width:100%;
     background:#38bdf8;
     color:#020617;
     border:none;
-    padding:8px;
+    padding:10px;
     border-radius:6px;
     margin-top:8px;
     cursor:pointer;
@@ -83,23 +80,21 @@ button:hover{background:#0ea5e9}
 }
 .item{
     display:grid;
-    grid-template-columns: 24px 1.5fr 1.2fr 0.6fr;
+    grid-template-columns: 24px 1.5fr 1.5fr 0.6fr;
     gap:8px;
     align-items:center;
     padding:6px 8px;
     border-bottom:1px solid rgba(56,189,248,0.2);
     font-size:14px;
 }
-.item:hover{
-    background:rgba(56,189,248,0.12);
-}
+.item:hover{background:rgba(56,189,248,0.12);}
 .header{
     font-weight:bold;
     background:#020617;
     color:#38bdf8;
 }
 .user{color:#22d3ee}
-.service{color:#facc15}
+.service{color:#facc15;font-weight:bold;}
 .robux{
     text-align:right;
     color:#4ade80;
@@ -120,56 +115,14 @@ button:hover{background:#0ea5e9}
     color:#4ade80;
 }
 
-/* MOBILE RESPONSIVE */
+/* MOBILE */
 @media (max-width:768px){
-    body{
-        padding:14px;
-        font-size:16px;
-    }
-
-    h2{
-        font-size:22px;
-        margin-bottom:12px;
-    }
-
-    h3{
-        font-size:18px;
-    }
-
-    textarea{
-        height:160px;
-        font-size:16px;
-        padding:12px;
-    }
-
-    input{
-        font-size:16px;
-        padding:10px;
-    }
-
-    button{
-        width:100%;
-        font-size:17px;
-        padding:12px;
-        border-radius:10px;
-    }
-
-    #convertedList{
-        max-height:320px;
-    }
-
-    .item{
-        grid-template-columns:28px 1.5fr 1.3fr 0.7fr;
-        font-size:15px;
-        padding:10px 8px;
-    }
-
-    .totalBox{
-        font-size:16px;
-        padding:14px;
-    }
+    body{padding:12px;font-size:16px;}
+    h2{font-size:22px;}
+    textarea{height:160px;font-size:16px;}
+    button{font-size:17px;}
+    .item{font-size:15px;}
 }
-
 </style>
 </head>
 
@@ -209,20 +162,27 @@ button:hover{background:#0ea5e9}
 <script>
 let convertedData = [];
 
+/* Chuẩn hoá dịch vụ */
 function formatService(text){
     text = text.toUpperCase();
 
-    if(text.includes("+1")) return "+1 SLOT";
+    if(text.includes("+1 SLOT")) return "+1 SLOT";
+
     if(text.includes("X2 MONEY")) return "X2 MONEY";
     if(text.includes("X2 MASTERY")) return "X2 MASTERY";
+
+    if(text.includes("+1")) return "+1 SLOT";
     if(text.includes("X2")) return "X2";
 
     if(text.includes("ROCKET")) return "ROCKET";
     if(text.includes("DARK")) return "DARK";
     if(text.includes("MAGMA")) return "MAGMA";
     if(text.includes("SPIN")) return "SPIN";
+    if(text.includes("ICE")) return "ICE";
+    if(text.includes("SPRING")) return "SPRING";
+    if(text.includes("BOMB")) return "BOMB";
 
-    return text;
+    return text.trim();
 }
 
 function convertData(){
@@ -237,8 +197,8 @@ function convertData(){
 
         let username = parts[ogIndex + 1] || "";
 
-        // Lấy toàn bộ chuỗi dịch vụ thay vì 1 từ
-        let serviceRaw = parts.slice(ogIndex + 2, ogIndex + 6).join(" ");
+        // Lấy nhiều từ để đủ cho "+1 SLOT", "X2 MONEY", "X2 MASTERY"
+        let serviceRaw = parts.slice(ogIndex + 2, ogIndex + 8).join(" ");
         let service = formatService(serviceRaw);
 
         let robux = 0;
@@ -315,6 +275,24 @@ function updateTotal(){
 }
 
 document.getElementById("robuxInput").addEventListener("input", updateTotal);
+</script>
+
+<!-- PARTICLES -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 60 },
+    color: { value: "#38bdf8" },
+    shape: { type: "circle" },
+    opacity: { value: 0.4 },
+    size: { value: 2 },
+    move: { speed: 0.8 }
+  },
+  interactivity:{
+    events:{ onhover:{ enable:true, mode:"repulse" } }
+  }
+});
 </script>
 
 </body>
