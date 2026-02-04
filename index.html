@@ -14,40 +14,25 @@ body{
     background:#020617;
     color:#e5e7eb;
 }
-
-/* PARTICLE BACKGROUND */
-#particles-js{
-    position:fixed;
-    inset:0;
-    z-index:-2;
-}
-
-/* TITLE */
 h2{
     text-align:center;
     color:#38bdf8;
     text-shadow:0 0 12px #38bdf8;
-    margin-bottom:15px;
 }
-
-/* LAYOUT */
 .container{
     display:flex;
     gap:15px;
     flex-wrap:wrap;
-    position:relative;
-    z-index:1;
 }
 .left,.right{
-    background:rgba(2,6,23,0.92);
+    background:#020617;
     border-radius:12px;
     padding:15px;
-    box-shadow:0 0 15px rgba(56,189,248,0.35);
+    box-shadow:0 0 15px rgba(56,189,248,.3);
 }
-.left{flex:3; min-width:280px;}
-.right{flex:1; min-width:240px;}
+.left{flex:3}
+.right{flex:1}
 
-/* INPUT */
 textarea,input{
     width:100%;
     background:#020617;
@@ -56,86 +41,59 @@ textarea,input{
     padding:8px;
     border-radius:6px;
 }
-textarea{resize:none;}
 button{
     width:100%;
+    margin-top:8px;
     background:#38bdf8;
     color:#020617;
     border:none;
     padding:10px;
-    border-radius:6px;
-    margin-top:8px;
-    cursor:pointer;
     font-weight:bold;
+    border-radius:6px;
+    cursor:pointer;
 }
-button:hover{background:#0ea5e9}
 
-/* LIST */
 #convertedList{
     margin-top:10px;
     border:1px solid #38bdf8;
     border-radius:6px;
     max-height:420px;
-    overflow-y:auto;
+    overflow:auto;
 }
 .item{
     display:grid;
-    grid-template-columns: 24px 1.5fr 1.5fr 0.6fr;
+    grid-template-columns:24px 1.5fr 1.5fr .6fr;
     gap:8px;
-    align-items:center;
     padding:6px 8px;
-    border-bottom:1px solid rgba(56,189,248,0.2);
-    font-size:14px;
+    border-bottom:1px solid rgba(56,189,248,.2);
 }
-.item:hover{background:rgba(56,189,248,0.12);}
 .header{
     font-weight:bold;
-    background:#020617;
     color:#38bdf8;
 }
 .user{color:#22d3ee}
-.service{color:#facc15;font-weight:bold;}
-.robux{
-    text-align:right;
-    color:#4ade80;
-    font-weight:bold;
-}
+.service{color:#facc15;font-weight:bold}
+.robux{text-align:right;color:#4ade80;font-weight:bold}
 
-/* RIGHT PANEL */
 .totalBox{
     margin-top:15px;
-    line-height:1.8;
     background:#020617;
     border:1px solid #38bdf8;
     padding:10px;
     border-radius:6px;
-}
-.totalBox span{
-    font-weight:bold;
-    color:#4ade80;
-}
-
-/* MOBILE */
-@media (max-width:768px){
-    body{padding:12px;font-size:16px;}
-    h2{font-size:22px;}
-    textarea{height:160px;font-size:16px;}
-    button{font-size:17px;}
-    .item{font-size:15px;}
 }
 </style>
 </head>
 
 <body>
 
-<div id="particles-js"></div>
-
 <h2>🛒 Robux Shop Convert Tool</h2>
 
 <div class="container">
     <div class="left">
-        <h3>Nhập dữ liệu gốc</h3>
-        <textarea id="inputData" rows="6" placeholder="Dán toàn bộ log đơn hàng vào đây..."></textarea>
+        <h3>Nhập log đơn</h3>
+        <textarea id="inputData" rows="6"
+        placeholder="Dán toàn bộ log robux vào đây..."></textarea>
         <button onclick="convertData()">Convert</button>
 
         <div id="convertedList">
@@ -150,10 +108,9 @@ button:hover{background:#0ea5e9}
 
     <div class="right">
         <h3>Robux hiện có</h3>
-        <input type="number" id="robuxInput" value="0">
-
+        <input id="robuxInput" type="number" value="0">
         <div class="totalBox">
-            <div>Tổng Robux đã chọn: <span id="totalRobux">0</span></div>
+            <div>Tổng Robux: <span id="totalRobux">0</span></div>
             <div>Còn dư: <span id="remainRobux">0</span></div>
         </div>
     </div>
@@ -162,84 +119,112 @@ button:hover{background:#0ea5e9}
 <script>
 let convertedData = [];
 
-/* Chuẩn hoá dịch vụ */
-function formatService(text){
-    text = text.toUpperCase().trim();
-
-    if (text.includes("+1 SLOT")) return "+1 SLOT";
-    if (text.includes("X2 MONEY")) return "X2 MONEY";
-    if (text.includes("X2 MASTERY")) return "X2 MASTERY";
-
-    if (text.includes("ROCKET")) return "ROCKET";
-    if (text.includes("DARK")) return "DARK";
-    if (text.includes("MAGMA")) return "MAGMA";
-    if (text.includes("ICE")) return "ICE";
-    if (text.includes("LIGHT")) return "LIGHT";
-    if (text.includes("BUDDHA")) return "BUDDHA";
-    if (text.includes("PORTAL")) return "PORTAL";
-    if (text.includes("SPIN")) return "SPIN";
-
-    return text; // fallback
+function normalizeService(text){
+    text = text.toUpperCase();
+    if(text.includes("+1 SLOT")) return "+1 SLOT";
+    if(text.includes("ROCKET")) return "ROCKET";
+    if(text.includes("LIGHT")) return "LIGHT";
+    if(text.includes("BUDDHA")) return "BUDDHA";
+    if(text.includes("PORTAL")) return "PORTAL";
+    if(text.includes("FAST BOAT")) return "FAST BOAT";
+    if(text.includes("LIGHTNING")) return "LIGHTNING";
+    return text.trim();
 }
 
 function convertData(){
     const input = document.getElementById("inputData").value.trim();
-    const lines = input.split("\n");
+    if(!input) return;
+
     convertedData = [];
+    const lines = input.split("\n");
 
-    lines.forEach(line => {
-        line = line.replace(/\s+/g, " ").trim();
+    lines.forEach(line=>{
+        line = line.replace(/\s+/g," ").trim();
 
-        // Bắt OG-xxxx
-        const ogMatch = line.match(/OG-\S+/);
-        if (!ogMatch) return;
+        // Có OG- mới xử
+        if(!line.includes("OG-")) return;
 
-        const ogIndex = line.indexOf(ogMatch[0]);
-        const afterOG = line.slice(ogIndex + ogMatch[0].length).trim();
+        const parts = line.split(" ");
+        const ogIndex = parts.findIndex(p=>p.startsWith("OG-"));
+        if(ogIndex === -1) return;
 
-        const parts = afterOG.split(" ");
-        const username = parts[0];
+        const username = parts[ogIndex + 1] || "";
 
-        // Lấy robux
-        const robuxMatch = line.match(/\$R(\d+)/);
-        const robux = robuxMatch ? parseInt(robuxMatch[1]) : 0;
+        // Robux
+        let robux = 0;
+        parts.forEach(p=>{
+            if(p.startsWith("$R")){
+                robux = parseInt(p.replace("$R","")) || 0;
+            }
+        });
 
-        // Lấy service = từ sau username → trước $R
-        let serviceRaw = line
-            .replace(ogMatch[0], "")
-            .replace(username, "")
-            .replace(/\$R\d+/, "")
-            .replace(/\d{1,3}(\.\d{3})* ?đ/gi, "") // xoá tiền VNĐ
-            .trim();
+        // Service = từ sau username đến trước $R
+        let serviceParts = [];
+        for(let i = ogIndex + 2; i < parts.length; i++){
+            if(parts[i].startsWith("$R")) break;
+            if(parts[i].includes("đ")) continue;
+            serviceParts.push(parts[i]);
+        }
 
-        const service = formatService(serviceRaw);
+        const service = normalizeService(serviceParts.join(" "));
 
-        if (username && service && robux) {
-            convertedData.push({ username, service, robux });
+        if(username && service && robux){
+            convertedData.push({username,service,robux});
         }
     });
 
-    renderList();
+    render();
 }
-</script>
 
+function render(){
+    const box = document.getElementById("convertedList");
+    box.innerHTML = `
+        <div class="item header">
+            <div></div>
+            <div>Username</div>
+            <div>Dịch vụ</div>
+            <div>Robux</div>
+        </div>
+    `;
 
-<!-- PARTICLES -->
-<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-<script>
-particlesJS("particles-js", {
-  particles: {
-    number: { value: 60 },
-    color: { value: "#38bdf8" },
-    shape: { type: "circle" },
-    opacity: { value: 0.4 },
-    size: { value: 2 },
-    move: { speed: 0.8 }
-  },
-  interactivity:{
-    events:{ onhover:{ enable:true, mode:"repulse" } }
-  }
-});
+    convertedData.forEach(item=>{
+        const row = document.createElement("div");
+        row.className = "item";
+
+        const cb = document.createElement("input");
+        cb.type="checkbox";
+        cb.checked=true;
+        cb.dataset.robux=item.robux;
+        cb.onchange=updateTotal;
+
+        row.innerHTML += "";
+        row.appendChild(cb);
+
+        row.innerHTML += `
+            <div class="user">${item.username}</div>
+            <div class="service">${item.service}</div>
+            <div class="robux">${item.robux}</div>
+        `;
+
+        box.appendChild(row);
+    });
+
+    updateTotal();
+}
+
+function updateTotal(){
+    let total = 0;
+    document.querySelectorAll("#convertedList input[type=checkbox]")
+    .forEach(c=>{
+        if(c.checked) total += parseInt(c.dataset.robux);
+    });
+
+    const have = parseInt(document.getElementById("robuxInput").value)||0;
+    document.getElementById("totalRobux").innerText = total;
+    document.getElementById("remainRobux").innerText = have - total;
+}
+
+document.getElementById("robuxInput").addEventListener("input",updateTotal);
 </script>
 
 </body>
